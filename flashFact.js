@@ -28,6 +28,8 @@ function firstQuestion() {
       basicCard.addBasicCard();
     } else if (answers.viewOrAdd === 'View basic cards') {
       basicCard.viewBasicCards();
+    } else if (answers.viewOrAdd === 'Add a cloze card') {
+      clozeCard.addClozeCard();
     }
   });
 }
