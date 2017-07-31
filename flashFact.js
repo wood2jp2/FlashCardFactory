@@ -1,6 +1,21 @@
 var basicCard = require('./BasicCard.js');
 var clozeCard = require('./ClozeCard.js');
 var inquirer = require('inquirer');
+var mysql = require('mysql');
+
+var connection = mysql.createConnection({
+  host: '127.0.0.1',
+  user: 'root',
+  password: 'root',
+  database: 'flashCards_db',
+  port: 3306
+});
+
+connection.connect(function(err) {
+  if (err) throw (err);
+  console.log("Connected!");
+  firstQuestion();
+});
 
 function firstQuestion() {
   inquirer.prompt([{
@@ -16,5 +31,3 @@ function firstQuestion() {
     }
   });
 }
-
-firstQuestion();
