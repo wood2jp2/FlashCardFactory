@@ -1,8 +1,10 @@
+// require nodes and exports
 const basicCard = require('./BasicCard.js');
 const clozeCard = require('./ClozeCard.js');
 const inquirer = require('inquirer');
 const mysql = require('mysql');
 
+// sequel stuffs
 const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
@@ -11,12 +13,14 @@ const connection = mysql.createConnection({
   port: 3306
 });
 
+// kinect and start the user query
 connection.connect(function(err) {
   if (err) throw (err);
   console.log("Connected!");
   firstQuestion();
 });
 
+// list prompt, throws imported functions depending on user response
 function firstQuestion() {
   inquirer.prompt([{
     name: 'viewOrAdd',

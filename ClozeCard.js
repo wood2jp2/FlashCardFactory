@@ -9,6 +9,8 @@ const connection = mysql.createConnection({
   port: 3306
 });
 
+var i = 0;
+
 module.exports = {
   ClozeCard: function(text, cloze) {
     this.text = text;
@@ -27,6 +29,7 @@ module.exports = {
       let fullQuestion = answers.text;
       let sentenceHalves = fullQuestion.split(answers.answer);
       let clozeSentence = sentenceHalves.join('____________');
+      // pushing new cards into database
       connection.query(`INSERT INTO clozeCards (full_text, partial_text, answer) values ('${answers.text}', '${clozeSentence}', '${answers.answer}')`,
         function(err, res) {
           if (err) throw err;
@@ -35,11 +38,25 @@ module.exports = {
     })
   },
   viewClozeCards: function() {
-    connection.query('SELECT partial_text FROM clozeCards', function(err, res) {
-      for (let i = 0; i < res.length; i++) {
-        if (err) throw err;
-        console.log(res[i].partial_text);
-      };
+    connection.query('SELECT * FROM clozeCards', function(err, res) {
+      if (err) throw err;
+      inquirer.prompt([{
+        name: 'clozeQuestion',
+        message: res[i].partial_text
+      }]).then(function(answers) {
+        // quiz, checking if answers are correct and looping to next card
+        if (answers.clozeQuestion === res[i].answer) {
+          console.log("you are correct!");
+          i++;
+          module.exports.viewClozeCards();
+        } else if (answers.clozeQuestion !== res[i].answer) {
+          console.log('You are incorrect! The correct answer is: ' + res[i].answer);
+          i++;
+          module.exports.viewClozeCards();
+        } else {
+          console.log('Game over! Make some more cards!')
+        }
+      });
     });
   }
 }
