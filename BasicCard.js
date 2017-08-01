@@ -1,13 +1,15 @@
-var inquirer = require('inquirer');
-var mysql = require('mysql');
+const inquirer = require('inquirer');
+const mysql = require('mysql');
 
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
   password: 'root',
   database: 'flashCards_db',
   port: 3306
 });
+
+var i = 0;
 
 connection.connect(function(err) {
   if (err) throw (err);
@@ -31,23 +33,30 @@ module.exports = {
       connection.query(`INSERT INTO basicCards (front, back) values ('${answers.front}', '${answers.back}')`,
         function(err, res) {
           if (err) throw err;
-          console.log("Card added!")
+          console.log("Card added!");
+          var basicCard = new BasicCard(answers.front, answers.back);
+          console.log(basicCard);
+          basicCardArray.push(basicCard);
         });
-      var basicCard = new BasicCard(answers.front, answers.back);
-      console.log(basicCard.front);
-      basicCardArray.push(basicCard);
     });
   },
-  viewBasicCards: function() {
-    inquirer.prompt([{
-      name: 'viewBasicCard',
-      message: 'Please choose a card to view.',
-      type: 'list',
-      choices: this.basicCardArray,
-    }]).then(function(answers) {
-      console.log(answers.viewBasicCard);
-      console.log('basiccards');
-    })
-  },
 
+  viewBasicCards: function() {
+
+    connection.query('SELECT * FROM basicCards', function(err, res) {
+      if (err) throw err;
+      inquirer.prompt([{
+        name: 'frontQuestion',
+        message: res[i].front
+      }]).then(function(answers) {
+        if (answers.frontQuestion === res[i].back) {
+          console.log("you are correct!");
+          i++;
+          module.exports.viewBasicCards();
+        } else {
+          console.log('You are incorrect! The correct answer is: ' + res[i].back)
+        }
+      });
+    });
+  }
 }

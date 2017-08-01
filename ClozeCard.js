@@ -1,7 +1,7 @@
-var inquirer = require('inquirer');
-var mysql = require('mysql');
+const inquirer = require('inquirer');
+const mysql = require('mysql');
 
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
   password: 'root',
@@ -17,23 +17,29 @@ module.exports = {
   addClozeCard: function() {
     inquirer.prompt([{
         name: 'text',
-        message: 'What is the FULL question you\'d like asked?'
+        message: 'What is the FULL sentence clue, including the answer?'
       },
       {
         name: 'answer',
-        message: 'What is the answer to your question?'
+        message: 'Please type only the answer of your above clue.'
       }
     ]).then(function(answers) {
-      var fullQuestion = answers.text;
-      var sentenceHalves = fullQuestion.split(answers.answer);
-      var clozeSentence = sentenceHalves.join('____________');
-      console.log(clozeSentence);
-      // NEED to manipulate answers to provide half sentence without answer...Partial
+      let fullQuestion = answers.text;
+      let sentenceHalves = fullQuestion.split(answers.answer);
+      let clozeSentence = sentenceHalves.join('____________');
       connection.query(`INSERT INTO clozeCards (full_text, partial_text, answer) values ('${answers.text}', '${clozeSentence}', '${answers.answer}')`,
         function(err, res) {
           if (err) throw err;
-          console.log("Cloze card added!")
+          console.log("Cloze card added!");
         });
     })
+  },
+  viewClozeCards: function() {
+    connection.query('SELECT partial_text FROM clozeCards', function(err, res) {
+      for (let i = 0; i < res.length; i++) {
+        if (err) throw err;
+        console.log(res[i].partial_text);
+      };
+    });
   }
 }

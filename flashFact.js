@@ -1,9 +1,9 @@
-var basicCard = require('./BasicCard.js');
-var clozeCard = require('./ClozeCard.js');
-var inquirer = require('inquirer');
-var mysql = require('mysql');
+const basicCard = require('./BasicCard.js');
+const clozeCard = require('./ClozeCard.js');
+const inquirer = require('inquirer');
+const mysql = require('mysql');
 
-var connection = mysql.createConnection({
+const connection = mysql.createConnection({
   host: '127.0.0.1',
   user: 'root',
   password: 'root',
@@ -30,6 +30,8 @@ function firstQuestion() {
       basicCard.viewBasicCards();
     } else if (answers.viewOrAdd === 'Add a cloze card') {
       clozeCard.addClozeCard();
+    } else if (answers.viewOrAdd === 'View cloze cards') {
+      clozeCard.viewClozeCards();
     }
   });
-}
+};
